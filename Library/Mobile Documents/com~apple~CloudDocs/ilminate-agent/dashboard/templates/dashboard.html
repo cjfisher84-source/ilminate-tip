@@ -67,7 +67,12 @@
             border: 2px solid #334155;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 168, 168, 0.15);
+        }
+        
+        .metric-card:first-child {
+            border-color: #00a8a8;
+            box-shadow: 0 4px 20px rgba(0, 168, 168, 0.25);
         }
         
         .metric-card-header {
@@ -92,11 +97,19 @@
         
         .donut-container {
             position: relative;
-            height: 140px;
-            margin-bottom: 16px;
+            height: 200px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        .donut-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            filter: drop-shadow(0 0 20px rgba(0, 168, 168, 0.4));
+            animation: pulse 3s ease-in-out infinite;
         }
         
         .donut-score {
@@ -105,15 +118,19 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            font-size: 1.1rem;
-            font-weight: 800;
+            font-size: 2.5rem;
+            font-weight: 900;
             color: #00a8a8;
+            text-shadow: 0 0 20px rgba(0, 168, 168, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1;
         }
         
         .donut-score span {
-            font-size: 0.4em;
-            opacity: 0.8;
-            font-weight: 600;
+            font-size: 0.45em;
+            opacity: 0.85;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
         }
         
         .metrics-mini-grid {
@@ -210,7 +227,7 @@
         }
         
         .stat-value.success {
-            color: #10b981;
+            color: #22c55e;
         }
         
         .stat-value.primary {
@@ -221,10 +238,19 @@
             color: #94a3b8;
         }
         
-        .color-protection { color: #10b981; }
+        .color-protection { color: #22c55e; }
         .color-response { color: #FFD700; }
-        .color-false-pos { color: #f97316; }
+        .color-false-pos { color: #f59e0b; }
         .color-coverage { color: #00a8a8; }
+        
+        @keyframes pulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px rgba(0, 168, 168, 0.4));
+            }
+            50% {
+                filter: drop-shadow(0 0 30px rgba(0, 168, 168, 0.7));
+            }
+        }
     </style>
 </head>
 <body>
@@ -243,9 +269,11 @@
                 </div>
                 
                 <div class="donut-container">
-                    <canvas id="scoreChart" width="200" height="200"></canvas>
-                    <div class="donut-score">
-                        {{ metrics.cyber_score }}<span>/100</span>
+                    <div class="donut-wrapper">
+                        <canvas id="scoreChart" width="200" height="200"></canvas>
+                        <div class="donut-score">
+                            {{ metrics.cyber_score }}<span>/100</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -305,12 +333,16 @@
             data: {
                 datasets: [{
                     data: [score, gap],
-                    backgroundColor: ['#00a8a8', '#334155'],
-                    borderWidth: 0
+                    backgroundColor: [
+                        '#00a8a8',  // Primary teal for score
+                        '#334155'   // Divider color for gap
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 2
                 }]
             },
             options: {
-                cutout: '70%',
+                cutout: '65%',
                 rotation: -90,
                 circumference: 360,
                 plugins: {
@@ -319,6 +351,12 @@
                     },
                     tooltip: {
                         enabled: false
+                    }
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 0,
+                        borderRadius: 4
                     }
                 }
             }
