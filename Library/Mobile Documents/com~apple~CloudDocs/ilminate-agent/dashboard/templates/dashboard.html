@@ -108,7 +108,7 @@
             position: relative;
             width: 200px;
             height: 200px;
-            filter: drop-shadow(0 0 20px rgba(0, 168, 168, 0.4));
+            filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.5));
             animation: pulse 3s ease-in-out infinite;
         }
         
@@ -118,19 +118,40 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 900;
-            color: #00a8a8;
-            text-shadow: 0 0 20px rgba(0, 168, 168, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+            color: #00ffff;
+            text-shadow: 
+                0 0 30px rgba(0, 255, 255, 0.8),
+                0 0 60px rgba(0, 168, 168, 0.6),
+                0 4px 12px rgba(0, 0, 0, 0.5),
+                0 0 0 4px rgba(0, 0, 0, 0.3);
             line-height: 1;
+            z-index: 10;
         }
         
         .donut-score span {
-            font-size: 0.45em;
-            opacity: 0.85;
-            font-weight: 700;
+            font-size: 0.5em;
+            font-weight: 800;
+            color: #f1f5f9;
             display: block;
-            margin-top: 4px;
+            margin-top: 6px;
+            text-shadow: 
+                0 0 15px rgba(241, 245, 249, 0.6),
+                0 2px 6px rgba(0, 0, 0, 0.4);
+            opacity: 0.95;
+        }
+        
+        .donut-score-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(0, 168, 168, 0.15) 0%, rgba(0, 0, 0, 0.4) 70%);
+            border-radius: 50%;
+            z-index: 1;
         }
         
         .metrics-mini-grid {
@@ -245,10 +266,10 @@
         
         @keyframes pulse {
             0%, 100% {
-                filter: drop-shadow(0 0 20px rgba(0, 168, 168, 0.4));
+                filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.5));
             }
             50% {
-                filter: drop-shadow(0 0 30px rgba(0, 168, 168, 0.7));
+                filter: drop-shadow(0 0 40px rgba(0, 255, 255, 0.8));
             }
         }
     </style>
@@ -271,6 +292,7 @@
                 <div class="donut-container">
                     <div class="donut-wrapper">
                         <canvas id="scoreChart" width="200" height="200"></canvas>
+                        <div class="donut-score-background"></div>
                         <div class="donut-score">
                             {{ metrics.cyber_score }}<span>/100</span>
                         </div>
@@ -334,8 +356,8 @@
                 datasets: [{
                     data: [score, gap],
                     backgroundColor: [
-                        '#00a8a8',  // Primary teal for score
-                        '#334155'   // Divider color for gap
+                        '#00ffff',  // Bright cyan/teal for score - more visible
+                        '#1e293b'   // Darker background color for gap - better contrast
                     ],
                     borderWidth: 0,
                     hoverOffset: 2
