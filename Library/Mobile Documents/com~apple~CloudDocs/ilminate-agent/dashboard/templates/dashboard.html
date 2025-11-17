@@ -85,7 +85,7 @@
         
         .donut-container {
             position: relative;
-            height: 240px;
+            height: 280px;
             margin-bottom: 24px;
             display: flex;
             align-items: center;
@@ -94,8 +94,8 @@
         
         .donut-wrapper {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 260px;
+            height: 260px;
         }
         
         .donut-score-container {
@@ -105,24 +105,33 @@
             transform: translate(-50%, -50%);
             text-align: center;
             z-index: 10;
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         .donut-score-main {
-            font-size: 4rem;
+            font-size: 5.5rem;
             font-weight: 900;
             color: #00d9ff;
             line-height: 1;
             text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
             margin: 0;
             padding: 0;
+            white-space: nowrap;
+            display: block;
         }
         
         .donut-score-label {
-            font-size: 1rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #cbd5e1;
-            margin-top: 8px;
+            margin-top: 12px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
+            display: block;
         }
         
         .metrics-mini-grid {
@@ -255,10 +264,10 @@
                 
                 <div class="donut-container">
                     <div class="donut-wrapper">
-                        <canvas id="scoreChart" width="220" height="220"></canvas>
+                        <canvas id="scoreChart" width="260" height="260"></canvas>
                         <div class="donut-score-container">
-                            <div class="donut-score-main">{{ metrics.cyber_score }}</div>
-                            <div class="donut-score-label">/ 100</div>
+                            <span class="donut-score-main">{{ metrics.cyber_score }}</span>
+                            <span class="donut-score-label">/ 100</span>
                         </div>
                     </div>
                 </div>
@@ -328,7 +337,7 @@
                 }]
             },
             options: {
-                cutout: '75%',
+                cutout: '78%',
                 rotation: -90,
                 circumference: 360,
                 plugins: {
@@ -344,7 +353,8 @@
                         borderWidth: 0,
                         borderRadius: 0
                     }
-                }
+                },
+                maintainAspectRatio: false
             }
         });
         
