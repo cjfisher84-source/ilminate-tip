@@ -1,0 +1,23 @@
+{
+  "emails_processed": 10000,
+  "emails_blocked": 500,
+  "emails_quarantined": 8900,
+  "false_positives": 80,
+  "avg_response_time_seconds": 138,
+  "endpoints_monitored": 50,
+  "total_endpoints": 50,
+  "last_incident_timestamp": "2025-01-20T08:30:00",
+  "daily_stats": {
+    "2025-01-19": {
+      "quarantined": 42,
+      "delivered": 115,
+      "blocked": 10
+    },
+    "2025-01-20": {
+      "quarantined": 45,
+      "delivered": 120,
+      "blocked": 12
+    }
+  }
+}
+

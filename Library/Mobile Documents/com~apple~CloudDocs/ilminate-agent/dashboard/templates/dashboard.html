@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilminate Agent - Security Performance</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 24px;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #00a8a8;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 16px;
+        }
+        
+        .section-subtitle {
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .metric-card {
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .metric-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .metric-card-header-bar {
+            width: 3px;
+            height: 20px;
+            background-color: #00a8a8;
+            border-radius: 2px;
+        }
+        
+        .metric-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #00a8a8;
+        }
+        
+        .donut-container {
+            position: relative;
+            height: 140px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .donut-score {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #00a8a8;
+        }
+        
+        .donut-score span {
+            font-size: 0.4em;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+        
+        .metrics-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .metric-mini {
+            text-align: center;
+            padding: 8px 6px;
+            background-color: #0f172a;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .metric-mini:hover {
+            background-color: rgba(0, 168, 168, 0.1);
+            border-color: #00a8a8;
+            transform: translateY(-2px);
+        }
+        
+        .metric-mini-value {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .metric-mini-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .security-posture-card {
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .security-posture-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #00a8a8;
+            margin-bottom: 12px;
+        }
+        
+        .security-posture-description {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: #0f172a;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            width: 100%;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .stat-item:hover {
+            background-color: rgba(0, 168, 168, 0.05);
+            border-color: #00a8a8;
+            transform: translateY(-2px);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .stat-value.success {
+            color: #10b981;
+        }
+        
+        .stat-value.primary {
+            color: #00a8a8;
+        }
+        
+        .stat-value.secondary {
+            color: #94a3b8;
+        }
+        
+        .color-protection { color: #10b981; }
+        .color-response { color: #FFD700; }
+        .color-false-pos { color: #f97316; }
+        .color-coverage { color: #00a8a8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Security Performance</h1>
+            <p>Overall cyber security score and key performance metrics</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <!-- Cyber Security Score Card -->
+            <div class="metric-card">
+                <div class="metric-card-header">
+                    <div class="metric-card-header-bar"></div>
+                    <div class="metric-card-title">Cyber Security Score</div>
+                </div>
+                
+                <div class="donut-container">
+                    <canvas id="scoreChart" width="200" height="200"></canvas>
+                    <div class="donut-score">
+                        {{ metrics.cyber_score }}<span>/100</span>
+                    </div>
+                </div>
+                
+                <div class="metrics-mini-grid">
+                    <div class="metric-mini">
+                        <div class="metric-mini-value color-protection">{{ metrics.protection_rate }}%</div>
+                        <div class="metric-mini-label">Protection Rate</div>
+                    </div>
+                    <div class="metric-mini">
+                        <div class="metric-mini-value color-response">{{ metrics.response_time }}m</div>
+                        <div class="metric-mini-label">Response Time</div>
+                    </div>
+                    <div class="metric-mini">
+                        <div class="metric-mini-value color-false-pos">{{ metrics.false_positives }}%</div>
+                        <div class="metric-mini-label">False Positives</div>
+                    </div>
+                    <div class="metric-mini">
+                        <div class="metric-mini-value color-coverage">{{ metrics.coverage }}%</div>
+                        <div class="metric-mini-label">Coverage</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Posture Card -->
+            <div class="security-posture-card">
+                <div class="security-posture-title">Security Posture</div>
+                <div class="security-posture-description">
+                    Your organization's security posture is being continuously monitored and improved through advanced threat detection and response capabilities.
+                </div>
+                
+                <div style="width: 100%;">
+                    <div class="stat-item">
+                        <div class="stat-label">Threats Blocked Today</div>
+                        <div class="stat-value success">{{ metrics.threats_blocked_today }}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Active Monitoring</div>
+                        <div class="stat-value primary">{{ metrics.active_monitoring }}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Last Incident</div>
+                        <div class="stat-value secondary">{{ metrics.last_incident }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Donut Chart for Cyber Security Score
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        const score = {{ metrics.cyber_score }};
+        const gap = 100 - score;
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [score, gap],
+                    backgroundColor: ['#00a8a8', '#334155'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '70%',
+                rotation: -90,
+                circumference: 360,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        });
+        
+        // Auto-refresh metrics every 30 seconds
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/metrics');
+                const result = await response.json();
+                if (result.success) {
+                    // Update page with new metrics
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error refreshing metrics:', error);
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
+

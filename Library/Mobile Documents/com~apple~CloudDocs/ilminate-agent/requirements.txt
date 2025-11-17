@@ -1,0 +1,107 @@
+# Ilminate Agent v2.0 - Email Security Module
+# Python 3.9+ required
+
+# Core Dependencies
+pyyaml>=6.0
+python-dateutil>=2.8.2
+requests>=2.31.0
+aiohttp>=3.9.0
+
+# Email Processing
+email-validator>=2.1.0
+exchangelib>=5.0.0  # Microsoft Exchange integration
+google-auth>=2.23.0
+google-auth-oauthlib>=1.1.0
+google-auth-httplib2>=0.1.1
+google-api-python-client>=2.100.0
+
+# AI/ML Core
+numpy>=1.24.0
+scipy>=1.11.0
+scikit-learn>=1.3.0
+pandas>=2.0.0
+
+# Deep Learning & Transformers
+torch>=2.0.0
+transformers>=4.35.0
+tokenizers>=0.15.0
+accelerate>=0.24.0
+sentencepiece>=0.1.99
+
+# Model Optimization
+optimum>=1.14.0
+bitsandbytes>=0.41.0  # 8-bit quantization
+
+# AI Provider SDKs (Optional - for cloud integration)
+openai>=1.3.0  # OpenAI GPT-4
+anthropic>=0.7.0  # Anthropic Claude
+google-generativeai>=0.3.0  # Google Gemini
+
+# Computer Vision
+pillow>=10.0.0
+opencv-python>=4.8.0
+
+# YARA Integration
+yara-python>=4.3.1
+
+# Natural Language Processing
+nltk>=3.8.0
+spacy>=3.7.0
+
+# Threat Intelligence
+misp-pymisp>=2.4.175
+stix2>=3.0.1
+taxii2-client>=2.3.0
+
+# Database & Caching
+redis>=5.0.0
+sqlalchemy>=2.0.0
+
+# API & Web
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.4.0
+jinja2>=3.1.0
+
+# Monitoring & Logging
+prometheus-client>=0.18.0
+structlog>=23.2.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Image & QR Code Scanning
+Pillow>=10.0.0  # Already listed above, but essential
+opencv-python>=4.8.0  # Already listed above
+pyzbar>=0.1.9  # Fast QR code detection
+qreader>=3.0.0  # AI-based QR code detection (YOLOv8)
+pytesseract>=0.3.10  # OCR for text extraction
+# Note: Tesseract-OCR must be installed on system:
+#   Ubuntu: sudo apt-get install tesseract-ocr
+#   macOS: brew install tesseract
+#   Windows: Download from https://github.com/UB-Mannheim/tesseract/wiki
+
+# Stress Testing & Performance Monitoring
+psutil>=5.9.0  # System resource monitoring
+exchangelib>=5.0.0  # Already listed above, for mailbox monitoring
+
+# Development Tools
+black>=23.11.0
+flake8>=6.1.0
+mypy>=1.7.0
+
+# PDF URL Extraction
+PyPDF2>=3.0.0  # PDF parsing and URL extraction
+pdfplumber>=0.10.0  # Alternative PDF parsing
+pypdf>=3.17.0  # Modern PDF library
+
+# Office Document Processing
+python-docx>=1.0.0  # Word document processing
+openpyxl>=3.1.0  # Excel document processing
+python-pptx>=0.6.23  # PowerPoint processing
+
+
+
+
