@@ -15,7 +15,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: #0f172a;
-            color: #f1f5f9;
+            color: #ffffff;
             padding: 24px;
             line-height: 1.5;
         }
@@ -39,7 +39,7 @@
         }
         
         .header p {
-            color: #cbd5e1;
+            color: #e2e8f0;
             font-size: 1rem;
         }
         
@@ -85,7 +85,7 @@
         
         .donut-container {
             position: relative;
-            height: 280px;
+            height: 360px;
             margin-bottom: 24px;
             display: flex;
             align-items: center;
@@ -94,8 +94,8 @@
         
         .donut-wrapper {
             position: relative;
-            width: 260px;
-            height: 260px;
+            width: 320px;
+            height: 320px;
         }
         
         .donut-score-container {
@@ -105,7 +105,7 @@
             transform: translate(-50%, -50%);
             text-align: center;
             z-index: 10;
-            width: 180px;
+            width: 220px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -113,11 +113,11 @@
         }
         
         .donut-score-main {
-            font-size: 5.5rem;
+            font-size: 7rem;
             font-weight: 900;
             color: #00d9ff;
             line-height: 1;
-            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            text-shadow: 0 0 30px rgba(0, 217, 255, 0.8);
             margin: 0;
             padding: 0;
             white-space: nowrap;
@@ -125,11 +125,11 @@
         }
         
         .donut-score-label {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #cbd5e1;
-            margin-top: 12px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 16px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
             white-space: nowrap;
             display: block;
         }
@@ -166,7 +166,7 @@
         .metric-mini-label {
             font-size: 0.7rem;
             font-weight: 600;
-            color: #cbd5e1;
+            color: #e2e8f0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -193,7 +193,7 @@
         
         .security-posture-description {
             font-size: 0.9rem;
-            color: #cbd5e1;
+            color: #e2e8f0;
             margin-bottom: 24px;
             line-height: 1.6;
         }
@@ -221,7 +221,7 @@
         .stat-label {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #cbd5e1;
+            color: #e2e8f0;
         }
         
         .stat-value {
@@ -238,7 +238,7 @@
         }
         
         .stat-value.secondary {
-            color: #cbd5e1;
+            color: #ffffff;
         }
         
         .color-protection { color: #10ff88; }
@@ -264,7 +264,7 @@
                 
                 <div class="donut-container">
                     <div class="donut-wrapper">
-                        <canvas id="scoreChart" width="260" height="260"></canvas>
+                        <canvas id="scoreChart" width="320" height="320"></canvas>
                         <div class="donut-score-container">
                             <span class="donut-score-main">{{ metrics.cyber_score }}</span>
                             <span class="donut-score-label">/ 100</span>
@@ -315,6 +315,17 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Threat Timeline Section -->
+        <div class="metric-card" style="margin-top: 32px;">
+            <div class="metric-card-header">
+                <div class="metric-card-header-bar"></div>
+                <div class="metric-card-title">Threat Timeline — last 30 days</div>
+            </div>
+            <div style="height: 400px; padding: 20px 0;">
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -337,7 +348,7 @@
                 }]
             },
             options: {
-                cutout: '78%',
+                cutout: '80%',
                 rotation: -90,
                 circumference: 360,
                 plugins: {
@@ -355,6 +366,130 @@
                     }
                 },
                 maintainAspectRatio: false
+            }
+        });
+        
+        // Threat Timeline Chart
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        const timelineData = [
+            {% for item in timeline %}
+            {
+                date: "{{ item.date }}",
+                quarantined: {{ item.quarantined }},
+                delivered: {{ item.delivered }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        
+        // Process timeline data
+        const labels = timelineData.map(item => {
+            const date = new Date(item.date);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        });
+        
+        const quarantinedData = timelineData.map(item => item.quarantined || 0);
+        const deliveredData = timelineData.map(item => item.delivered || 0);
+        
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Quarantined',
+                        data: quarantinedData,
+                        borderColor: '#00d9ff',
+                        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#00d9ff',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Delivered',
+                        data: deliveredData,
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#ffd700',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: '#ffffff',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        borderColor: '#00d9ff',
+                        borderWidth: 2,
+                        padding: 12,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            lineWidth: 1
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#ffffff',
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            },
+                            maxRotation: 45,
+                            minRotation: 45
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            lineWidth: 1
+                        }
+                    }
+                }
             }
         });
         
