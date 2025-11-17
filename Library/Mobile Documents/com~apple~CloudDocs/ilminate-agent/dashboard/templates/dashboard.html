@@ -28,31 +28,19 @@
         .header {
             margin-bottom: 32px;
             padding-bottom: 24px;
-            border-bottom: 2px solid #00a8a8;
+            border-bottom: 2px solid #00d9ff;
         }
         
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
-            color: #f1f5f9;
+            color: #ffffff;
             margin-bottom: 8px;
         }
         
         .header p {
-            color: #94a3b8;
+            color: #cbd5e1;
             font-size: 1rem;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 16px;
-        }
-        
-        .section-subtitle {
-            color: #94a3b8;
-            margin-bottom: 24px;
         }
         
         .metrics-grid {
@@ -64,40 +52,40 @@
         
         .metric-card {
             background-color: #1e293b;
-            border: 2px solid #334155;
+            border: 2px solid #475569;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 4px 16px rgba(0, 168, 168, 0.15);
+            box-shadow: 0 4px 16px rgba(0, 217, 255, 0.2);
         }
         
         .metric-card:first-child {
-            border-color: #00a8a8;
-            box-shadow: 0 4px 20px rgba(0, 168, 168, 0.25);
+            border-color: #00d9ff;
+            box-shadow: 0 4px 24px rgba(0, 217, 255, 0.4);
         }
         
         .metric-card-header {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
         
         .metric-card-header-bar {
-            width: 3px;
-            height: 20px;
-            background-color: #00a8a8;
+            width: 4px;
+            height: 24px;
+            background-color: #00d9ff;
             border-radius: 2px;
         }
         
         .metric-card-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #00a8a8;
+            color: #00d9ff;
         }
         
         .donut-container {
             position: relative;
-            height: 200px;
+            height: 240px;
             margin-bottom: 24px;
             display: flex;
             align-items: center;
@@ -106,93 +94,77 @@
         
         .donut-wrapper {
             position: relative;
-            width: 200px;
-            height: 200px;
-            filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.5));
-            animation: pulse 3s ease-in-out infinite;
+            width: 220px;
+            height: 220px;
         }
         
-        .donut-score {
+        .donut-score-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #00ffff;
-            text-shadow: 
-                0 0 30px rgba(0, 255, 255, 0.8),
-                0 0 60px rgba(0, 168, 168, 0.6),
-                0 4px 12px rgba(0, 0, 0, 0.5),
-                0 0 0 4px rgba(0, 0, 0, 0.3);
-            line-height: 1;
             z-index: 10;
         }
         
-        .donut-score span {
-            font-size: 0.5em;
-            font-weight: 800;
-            color: #f1f5f9;
-            display: block;
-            margin-top: 6px;
-            text-shadow: 
-                0 0 15px rgba(241, 245, 249, 0.6),
-                0 2px 6px rgba(0, 0, 0, 0.4);
-            opacity: 0.95;
+        .donut-score-main {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #00d9ff;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            margin: 0;
+            padding: 0;
         }
         
-        .donut-score-background {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, rgba(0, 168, 168, 0.15) 0%, rgba(0, 0, 0, 0.4) 70%);
-            border-radius: 50%;
-            z-index: 1;
+        .donut-score-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-top: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .metrics-mini-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 12px;
         }
         
         .metric-mini {
             text-align: center;
-            padding: 8px 6px;
+            padding: 12px 8px;
             background-color: #0f172a;
-            border-radius: 6px;
-            border: 1px solid #334155;
+            border-radius: 8px;
+            border: 1px solid #475569;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         
         .metric-mini:hover {
-            background-color: rgba(0, 168, 168, 0.1);
-            border-color: #00a8a8;
+            background-color: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
         }
         
         .metric-mini-value {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 2px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 4px;
         }
         
         .metric-mini-label {
-            font-size: 0.6rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #94a3b8;
+            color: #cbd5e1;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
         }
         
         .security-posture-card {
             background-color: #1e293b;
-            border: 2px solid #334155;
+            border: 2px solid #475569;
             border-radius: 16px;
             padding: 24px;
             height: 320px;
@@ -204,74 +176,66 @@
         }
         
         .security-posture-title {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #00a8a8;
-            margin-bottom: 12px;
+            color: #00d9ff;
+            margin-bottom: 16px;
         }
         
         .security-posture-description {
-            font-size: 0.85rem;
-            color: #94a3b8;
+            font-size: 0.9rem;
+            color: #cbd5e1;
             margin-bottom: 24px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
         
         .stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
+            padding: 14px;
             background-color: #0f172a;
             border-radius: 8px;
             margin-bottom: 12px;
             width: 100%;
             transition: all 0.2s ease;
-            border: 1px solid transparent;
+            border: 1px solid #475569;
         }
         
         .stat-item:hover {
-            background-color: rgba(0, 168, 168, 0.05);
-            border-color: #00a8a8;
+            background-color: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
         }
         
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            color: #94a3b8;
+            color: #cbd5e1;
         }
         
         .stat-value {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 1.3rem;
+            font-weight: 800;
         }
         
         .stat-value.success {
-            color: #22c55e;
+            color: #10ff88;
         }
         
         .stat-value.primary {
-            color: #00a8a8;
+            color: #00d9ff;
         }
         
         .stat-value.secondary {
-            color: #94a3b8;
+            color: #cbd5e1;
         }
         
-        .color-protection { color: #22c55e; }
-        .color-response { color: #FFD700; }
-        .color-false-pos { color: #f59e0b; }
-        .color-coverage { color: #00a8a8; }
-        
-        @keyframes pulse {
-            0%, 100% {
-                filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.5));
-            }
-            50% {
-                filter: drop-shadow(0 0 40px rgba(0, 255, 255, 0.8));
-            }
-        }
+        .color-protection { color: #10ff88; }
+        .color-response { color: #ffd700; }
+        .color-false-pos { color: #ffa500; }
+        .color-coverage { color: #00d9ff; }
     </style>
 </head>
 <body>
@@ -291,10 +255,10 @@
                 
                 <div class="donut-container">
                     <div class="donut-wrapper">
-                        <canvas id="scoreChart" width="200" height="200"></canvas>
-                        <div class="donut-score-background"></div>
-                        <div class="donut-score">
-                            {{ metrics.cyber_score }}<span>/100</span>
+                        <canvas id="scoreChart" width="220" height="220"></canvas>
+                        <div class="donut-score-container">
+                            <div class="donut-score-main">{{ metrics.cyber_score }}</div>
+                            <div class="donut-score-label">/ 100</div>
                         </div>
                     </div>
                 </div>
@@ -347,8 +311,8 @@
     <script>
         // Donut Chart for Cyber Security Score
         const ctx = document.getElementById('scoreChart').getContext('2d');
-        const score = {{ metrics.cyber_score }};
-        const gap = 100 - score;
+        const score = Math.max(0, {{ metrics.cyber_score }} || 0);
+        const gap = Math.max(0, 100 - score);
         
         new Chart(ctx, {
             type: 'doughnut',
@@ -356,15 +320,15 @@
                 datasets: [{
                     data: [score, gap],
                     backgroundColor: [
-                        '#00ffff',  // Bright cyan/teal for score - more visible
-                        '#1e293b'   // Darker background color for gap - better contrast
+                        '#00d9ff',  // Bright cyan for score
+                        '#334155'   // Dark grey for gap
                     ],
                     borderWidth: 0,
-                    hoverOffset: 2
+                    hoverOffset: 0
                 }]
             },
             options: {
-                cutout: '65%',
+                cutout: '75%',
                 rotation: -90,
                 circumference: 360,
                 plugins: {
@@ -378,7 +342,7 @@
                 elements: {
                     arc: {
                         borderWidth: 0,
-                        borderRadius: 4
+                        borderRadius: 0
                     }
                 }
             }
@@ -390,7 +354,6 @@
                 const response = await fetch('/api/metrics');
                 const result = await response.json();
                 if (result.success) {
-                    // Update page with new metrics
                     location.reload();
                 }
             } catch (error) {
@@ -400,4 +363,3 @@
     </script>
 </body>
 </html>
-
