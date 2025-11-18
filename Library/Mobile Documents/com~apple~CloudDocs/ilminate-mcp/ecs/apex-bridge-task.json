@@ -1,0 +1,47 @@
+{
+  "family": "ilminate-apex-bridge",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "containerDefinitions": [
+    {
+      "name": "apex-bridge",
+      "image": "<account-id>.dkr.ecr.<region>.amazonaws.com/ilminate-apex-bridge:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8888,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "APEX_BRIDGE_PORT",
+          "value": "8888"
+        },
+        {
+          "name": "PYTHONUNBUFFERED",
+          "value": "1"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ilminate-apex-bridge",
+          "awslogs-region": "<region>",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8888/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3
+      }
+    }
+  ],
+  "taskRoleArn": "arn:aws:iam::<account-id>:role/ilminate-apex-bridge-task-role",
+  "executionRoleArn": "arn:aws:iam::<account-id>:role/ecsTaskExecutionRole"
+}
+
