@@ -1,0 +1,464 @@
+# Email Security & Advanced Threat Detection Configuration
+# Ilminate Agent - Enhanced Email Security Module
+# Version: 2.0.0
+# Updated: October 2025
+
+# Email Monitoring Configuration
+email_security:
+  enabled: true
+  
+  # Email Server Integration
+  servers:
+    # Microsoft Exchange / Office 365
+    exchange:
+      enabled: true
+      connection_type: "ews"  # ews, mapi, graph_api
+      server: "outlook.office365.com"
+      auth:
+        type: "oauth2"  # oauth2, basic, certificate
+        client_id: "${EXCHANGE_CLIENT_ID}"
+        client_secret: "${EXCHANGE_CLIENT_SECRET}"
+        tenant_id: "${EXCHANGE_TENANT_ID}"
+      monitoring:
+        mailboxes: "all"  # all, specific, role-based
+        folders: ["Inbox", "Sent Items", "Deleted Items", "Junk Email"]
+        real_time: true
+        
+    # Gmail / Google Workspace
+    gmail:
+      enabled: false
+      connection_type: "gmail_api"
+      auth:
+        type: "oauth2"
+        credentials_file: "/etc/ilminate-agent/credentials/gmail-credentials.json"
+      monitoring:
+        mailboxes: "all"
+        labels: ["INBOX", "SENT", "SPAM", "TRASH"]
+        real_time: true
+        
+    # Generic IMAP/SMTP
+    imap:
+      enabled: false
+      server: "imap.example.com"
+      port: 993
+      ssl: true
+      auth:
+        username: "${EMAIL_USERNAME}"
+        password: "${EMAIL_PASSWORD}"
+      monitoring:
+        scan_interval: "60s"
+        
+  # Email Analysis Configuration
+  analysis:
+    # Header Analysis
+    headers:
+      enabled: true
+      check_spf: true
+      check_dkim: true
+      check_dmarc: true
+      check_arc: true
+      analyze_routing: true
+      detect_spoofing: true
+      detect_display_name_spoofing: true
+      
+    # Content Analysis
+    content:
+      enabled: true
+      body_text_analysis: true
+      html_analysis: true
+      extract_urls: true
+      extract_attachments: true
+      sentiment_analysis: true
+      language_detection: true
+      
+    # Attachment Analysis  
+    attachments:
+      enabled: true
+      scan_with_yara: true
+      sandbox_analysis: true
+      extract_macros: true
+      analyze_scripts: true
+      check_double_extensions: true
+      hash_analysis: true
+      max_size: "25MB"
+      allowed_types: []  # Empty = all types scanned
+      blocked_types: [".exe", ".scr", ".bat", ".cmd", ".com", ".pif", ".vbs", ".js"]
+      
+    # URL Analysis
+    urls:
+      enabled: true
+      reputation_check: true
+      redirect_following: true
+      screenshot_capture: true
+      detect_homoglyphs: true
+      check_url_shorteners: true
+      phishing_detection: true
+      max_redirects: 5
+      
+  # AI/ML Detection Engines
+  ai_detection:
+    # Primary AI Engine - Transformer-based Email Analysis
+    transformer_engine:
+      enabled: true
+      model: "bert-phishing-detector"
+      model_path: "/etc/ilminate-agent/models/bert-email-security"
+      confidence_threshold: 0.75
+      batch_size: 32
+      max_sequence_length: 512
+      features:
+        - "phishing_detection"
+        - "business_email_compromise"
+        - "impersonation_detection"
+        - "urgency_detection"
+        - "credential_harvesting"
+        
+    # Secondary AI Engine - RoBERTa for Advanced NLP
+    roberta_engine:
+      enabled: true
+      model: "roberta-threat-classifier"
+      model_path: "/etc/ilminate-agent/models/roberta-threat"
+      confidence_threshold: 0.70
+      features:
+        - "social_engineering_detection"
+        - "invoice_scam_detection"
+        - "ceo_fraud_detection"
+        - "ai_generated_content_detection"
+        
+    # AI Forensics Engine - Detect AI-Generated Content
+    ai_forensics:
+      enabled: true
+      model: "ai-content-detector"
+      model_path: "/etc/ilminate-agent/models/ai-forensics"
+      features:
+        - "detect_gpt_generated"
+        - "detect_claude_generated"
+        - "detect_gemini_generated"
+        - "detect_ai_paraphrased"
+        - "deepfake_detection"
+      confidence_threshold: 0.80
+      
+    # LLM-based Email Understanding (Local Model)
+    llm_analyzer:
+      enabled: true
+      model: "llama3-8b-security"  # Local model for privacy
+      model_path: "/etc/ilminate-agent/models/llama3-8b"
+      use_quantization: true  # Use 4-bit quantization for performance
+      max_tokens: 2048
+      temperature: 0.1  # Low temperature for consistent analysis
+      features:
+        - "intent_classification"
+        - "context_understanding"
+        - "anomaly_explanation"
+        - "threat_summarization"
+        
+    # Behavioral Analysis Engine
+    behavioral_engine:
+      enabled: true
+      model: "isolation-forest"  # Anomaly detection
+      features:
+        - "sender_behavior_baseline"
+        - "recipient_pattern_analysis"
+        - "time_based_anomalies"
+        - "volume_anomalies"
+        - "geolocation_anomalies"
+      training_window: "30d"
+      update_frequency: "6h"
+      
+    # Image Analysis (for attachments and embedded images)
+    vision_engine:
+      enabled: true
+      model: "clip-vit-base"
+      model_path: "/etc/ilminate-agent/models/clip-vision"
+      features:
+        - "logo_impersonation"
+        - "qr_code_analysis"
+        - "screenshot_detection"
+        - "nsfw_detection"
+        - "steganography_detection"
+        
+    # URL Reputation & Analysis
+    url_intelligence:
+      enabled: true
+      model: "gradient-boosting-classifier"
+      features:
+        - "url_structure_analysis"
+        - "domain_reputation"
+        - "ssl_certificate_validation"
+        - "whois_analysis"
+        - "historical_threat_data"
+      threat_feeds:
+        - "abuse.ch"
+        - "phishtank"
+        - "openphish"
+        - "urlhaus"
+        - "custom_feeds"
+        
+  # Advanced Threat Detection
+  advanced_threats:
+    # Business Email Compromise (BEC)
+    bec_detection:
+      enabled: true
+      monitor_executive_impersonation: true
+      monitor_vendor_fraud: true
+      monitor_payroll_redirect: true
+      monitor_wire_transfer_requests: true
+      vip_list: []  # Add executive emails
+      
+    # Account Compromise Detection
+    account_compromise:
+      enabled: true
+      monitor_unusual_login_locations: true
+      monitor_credential_stuffing: true
+      monitor_session_hijacking: true
+      monitor_forwarding_rules: true
+      monitor_mailbox_delegation: true
+      
+    # Advanced Persistent Threats (APT)
+    apt_detection:
+      enabled: true
+      monitor_spear_phishing: true
+      monitor_watering_hole: true
+      monitor_zero_day_exploits: true
+      track_attack_campaigns: true
+      mitre_attack_mapping: true
+      
+    # Supply Chain Attacks
+    supply_chain:
+      enabled: true
+      monitor_vendor_compromise: true
+      monitor_third_party_risks: true
+      validate_sender_domains: true
+      
+    # Ransomware Indicators
+    ransomware:
+      enabled: true
+      detect_ransom_demands: true
+      detect_encryption_threats: true
+      detect_payment_instructions: true
+      
+  # Threat Intelligence Integration
+  threat_intelligence:
+    enabled: true
+    
+    # Real-time Threat Feeds
+    feeds:
+      # MISP Integration
+      misp:
+        enabled: true
+        url: "https://misp.ilminate.local"
+        api_key: "${MISP_API_KEY}"
+        update_interval: "15m"
+        
+      # STIX/TAXII
+      stix:
+        enabled: true
+        server: "https://taxii.ilminate.local"
+        collection: "email-threats"
+        
+      # Commercial Feeds
+      recorded_future:
+        enabled: false
+        api_key: "${RECORDED_FUTURE_API_KEY}"
+        
+      anomali:
+        enabled: false
+        api_key: "${ANOMALI_API_KEY}"
+        
+    # Indicator Matching
+    indicators:
+      match_domains: true
+      match_ips: true
+      match_urls: true
+      match_file_hashes: true
+      match_email_addresses: true
+      match_subject_patterns: true
+      
+  # Machine Learning Model Management
+  ml_management:
+    # Model Training
+    training:
+      enabled: true
+      auto_training: true
+      training_schedule: "daily"
+      training_time: "02:00"
+      minimum_samples: 1000
+      validation_split: 0.2
+      
+    # Model Updates
+    updates:
+      auto_update: true
+      update_source: "https://models.ilminate.com/email-security"
+      update_interval: "24h"
+      rollback_on_degradation: true
+      
+    # Feedback Loop
+    feedback:
+      enabled: true
+      learn_from_user_actions: true
+      learn_from_false_positives: true
+      learn_from_missed_detections: true
+      human_in_the_loop: true
+      
+    # Model Performance Monitoring
+    monitoring:
+      enabled: true
+      track_accuracy: true
+      track_precision: true
+      track_recall: true
+      track_f1_score: true
+      track_inference_time: true
+      alert_on_degradation: true
+      degradation_threshold: 0.05  # 5% performance drop
+      
+  # Response Actions
+  response:
+    # Quarantine
+    quarantine:
+      enabled: true
+      auto_quarantine_high_confidence: true
+      confidence_threshold: 0.90
+      quarantine_folder: "Ilminate Quarantine"
+      notify_user: true
+      notify_admin: true
+      
+    # User Warnings
+    warnings:
+      enabled: true
+      banner_insertion: true
+      popup_notifications: false
+      email_warnings: true
+      warning_templates:
+        phishing: "⚠️ CAUTION: This email has been identified as a potential phishing attempt."
+        external: "🌐 EXTERNAL: This email originated from outside your organization."
+        suspicious: "🔍 SUSPICIOUS: This email contains unusual characteristics."
+        
+    # Automated Remediation
+    remediation:
+      enabled: true
+      auto_delete_malware: true
+      auto_disable_malicious_links: true
+      auto_revoke_compromised_sessions: true
+      auto_reset_compromised_passwords: false  # Requires approval
+      
+    # Incident Response Integration
+    incident_response:
+      enabled: true
+      create_tickets: true
+      ticketing_system: "servicenow"  # servicenow, jira, custom
+      severity_mapping:
+        critical: "P1"
+        high: "P2"
+        medium: "P3"
+        low: "P4"
+        
+  # Reporting & Analytics
+  reporting:
+    enabled: true
+    
+    # Real-time Dashboards
+    dashboards:
+      enabled: true
+      refresh_interval: "30s"
+      metrics:
+        - "total_emails_scanned"
+        - "threats_detected"
+        - "false_positive_rate"
+        - "average_detection_time"
+        - "top_threat_types"
+        - "top_targeted_users"
+        - "ai_model_performance"
+        
+    # Scheduled Reports
+    scheduled:
+      enabled: true
+      daily_summary: true
+      weekly_report: true
+      monthly_report: true
+      executive_summary: true
+      
+    # Threat Intelligence Reports
+    threat_intel:
+      enabled: true
+      campaign_tracking: true
+      trend_analysis: true
+      predictive_analytics: true
+      
+  # Privacy & Compliance
+  compliance:
+    # Data Privacy
+    privacy:
+      anonymize_pii: true
+      encrypt_at_rest: true
+      encrypt_in_transit: true
+      data_retention: "90d"
+      
+    # Regulatory Compliance
+    regulations:
+      gdpr: true
+      hipaa: false
+      sox: false
+      pci_dss: false
+      
+    # Audit Logging
+    audit:
+      enabled: true
+      log_all_detections: true
+      log_user_actions: true
+      log_model_decisions: true
+      log_retention: "365d"
+      
+  # Performance Tuning
+  performance:
+    # Processing
+    processing:
+      max_concurrent_scans: 10
+      batch_processing: true
+      batch_size: 50
+      queue_size: 1000
+      
+    # Caching
+    caching:
+      enabled: true
+      cache_url_reputation: true
+      cache_domain_reputation: true
+      cache_hash_lookups: true
+      cache_ttl: "24h"
+      
+    # Resource Limits
+    resources:
+      max_memory: "2GB"
+      max_cpu_cores: 4
+      gpu_acceleration: false  # Set to true if GPU available
+      
+# Integration with existing EDR agent
+edr_integration:
+  enabled: true
+  share_threat_intel: true
+  correlate_email_with_endpoint: true
+  unified_alerting: true
+  cross_reference_iocs: true
+
+# API Configuration for External Integrations
+api:
+  enabled: true
+  port: 8443
+  ssl: true
+  authentication:
+    type: "jwt"
+    token_expiry: "24h"
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 1000
+  endpoints:
+    - "/api/v1/scan"
+    - "/api/v1/analyze"
+    - "/api/v1/report"
+    - "/api/v1/intel"
+    - "/api/v1/models"
+
+
+
+
+
+
+

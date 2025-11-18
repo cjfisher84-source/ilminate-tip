@@ -1,0 +1,257 @@
+# Ilminate Agent Configuration
+# Version: 1.0.0
+
+# SIEM Integration Configuration
+siem:
+  host: "10.0.1.50"                      # Wazuh SIEM Manager IP (replace with actual IP)
+  port: 514                              # Syslog port
+  protocol: "tcp"                        # tcp or udp
+  format: "json"                         # json or cef
+  facility: "local0"                     # Syslog facility
+  tls:
+    enabled: false                       # Enable for production
+    cert_file: "/etc/ilminate-agent/certs/client.crt"
+    key_file: "/etc/ilminate-agent/certs/client.key"
+    ca_file: "/etc/ilminate-agent/certs/ca.crt"
+    verify_server: true
+
+# Tenant Configuration
+tenant_id: "${ILMINATE_TENANT_ID}"       # Will be replaced during deployment
+organization: "${ILMINATE_ORG_NAME}"     # Organization name for alerts
+environment: "${ILMINATE_ENV}"           # dev, stage, prod
+
+# Monitoring Configuration
+monitoring:
+  file_system:
+    enabled: true
+    scan_interval: "30s"                 # Scan interval
+    paths:
+      # Linux/macOS critical paths
+      - "/etc"
+      - "/usr/local/bin"
+      - "/usr/bin"
+      - "/opt"
+      - "/var/www"
+      # Windows critical paths (ignored on non-Windows)
+      - "C:\\Windows\\System32"
+      - "C:\\Program Files"
+      - "C:\\Users"
+      - "C:\\ProgramData"
+    excluded_paths:
+      - "/tmp"
+      - "/var/tmp"
+      - "/var/log"
+      - "/proc"
+      - "/sys"
+      - "/dev"
+      - "C:\\Windows\\Temp"
+      - "C:\\Temp"
+    file_types:
+      - "*.exe"
+      - "*.dll"
+      - "*.so"
+      - "*.dylib"
+      - "*.sh"
+      - "*.bat"
+      - "*.ps1"
+      - "*.py"
+      - "*.php"
+      - "*.jsp"
+      - "*.asp"
+      
+  processes:
+    enabled: true
+    monitor_children: true               # Monitor child processes
+    command_line_logging: true           # Log full command lines
+    suspicious_processes:
+      - "nc"
+      - "netcat"
+      - "ncat"
+      - "socat"
+      - "wget"
+      - "curl"
+      - "powershell"
+      - "cmd.exe"
+      - "wmic"
+      - "reg.exe"
+      - "regedit"
+      - "at.exe"
+      - "schtasks"
+    
+  network:
+    enabled: true
+    monitor_dns: true                    # Monitor DNS queries
+    monitor_connections: true            # Monitor network connections
+    connection_logging: true             # Log network connections
+    excluded_ports: [22, 23, 53, 80, 443, 993, 995]  # Common legitimate ports
+    suspicious_ports: [4444, 5555, 6666, 7777, 8080, 9999]  # Common malware ports
+    
+  authentication:
+    enabled: true
+    monitor_failed_logins: true          # Monitor failed login attempts
+    monitor_privileged_access: true      # Monitor sudo/admin access
+    monitor_new_accounts: true           # Monitor account creation
+    
+  registry:                             # Windows only
+    enabled: true
+    monitor_autorun: true               # Monitor autorun keys
+    monitor_services: true              # Monitor service changes
+    critical_keys:
+      - "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+      - "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+      - "HKLM\\SYSTEM\\CurrentControlSet\\Services"
+
+# Detection Rules Configuration
+detection:
+  yara:
+    enabled: true
+    rules_path: "/etc/ilminate-agent/yara"
+    update_interval: "24h"             # Update rules every 24 hours
+    scan_new_files: true               # Scan new files with YARA
+    scan_memory: false                 # Memory scanning (resource intensive)
+    
+  behavioral:
+    enabled: true
+    suspicious_processes: true         # Detect suspicious process behavior
+    persistence_detection: true       # Monitor persistence mechanisms
+    privilege_escalation: true        # Detect privilege escalation
+    lateral_movement: true            # Detect lateral movement attempts
+    data_exfiltration: true           # Monitor large data transfers
+    
+  signatures:
+    enabled: true
+    update_interval: "6h"             # Update signatures every 6 hours
+    scan_archives: false              # Scan inside archives (resource intensive)
+    
+  thresholds:
+    max_alerts_per_minute: 100        # Rate limiting
+    file_changes_per_minute: 200      # File system change threshold
+    process_spawns_per_minute: 50     # Process spawn threshold
+    network_connections_per_minute: 100  # Network connection threshold
+
+# Performance Settings
+performance:
+  cpu_limit: 2.0                      # Max CPU usage (% of one core)
+  memory_limit: "128MB"               # Max memory usage
+  disk_queue_size: 10000              # Event queue size
+  network_buffer_size: "64KB"         # Network buffer size
+  log_rotation: "10MB"                # Rotate logs at 10MB
+  retention_days: 30                  # Keep logs for 30 days
+  compression: true                   # Compress rotated logs
+  
+# Logging Configuration
+logging:
+  level: "info"                       # debug, info, warn, error
+  file: "/var/log/ilminate-agent/agent.log"  # Linux/macOS
+  # file: "C:\\Program Files\\Ilminate\\Agent\\logs\\agent.log"  # Windows
+  max_size: "10MB"
+  max_backups: 5
+  max_age: 30                        # Days
+  format: "json"                     # json or text
+  
+# Agent Management
+management:
+  update_channel: "stable"            # stable, beta, or dev
+  auto_update: true                   # Enable automatic updates
+  update_window: "02:00-04:00"        # Maintenance window (UTC)
+  telemetry: true                     # Send anonymous telemetry
+  heartbeat_interval: "60s"           # Heartbeat to SIEM
+  config_refresh_interval: "300s"     # Config refresh interval
+  
+# Alert Configuration
+alerting:
+  severity_levels:
+    critical: 1                       # Critical alerts (immediate response)
+    high: 2                          # High severity alerts
+    medium: 3                        # Medium severity alerts
+    low: 4                           # Low severity alerts
+    info: 5                          # Informational alerts
+    
+  categories:
+    - "malware"
+    - "intrusion"
+    - "data_loss"
+    - "policy_violation"
+    - "system_anomaly"
+    - "authentication"
+    - "privilege_escalation"
+    - "lateral_movement"
+    - "persistence"
+    - "exfiltration"
+    
+  enrichment:
+    add_hostname: true                # Add hostname to alerts
+    add_user_context: true            # Add user information
+    add_process_tree: true            # Add process ancestry
+    add_file_hashes: true             # Add file hashes
+    add_network_context: true         # Add network information
+    lookup_reputation: false          # External reputation lookups (requires internet)
+
+# Output Configuration
+outputs:
+  syslog:
+    enabled: true
+    hosts:
+      - "${siem.host}:${siem.port}"
+    protocol: "${siem.protocol}"
+    facility: "${siem.facility}"
+    format: "${siem.format}"
+    
+  # Additional outputs can be enabled
+  file:
+    enabled: false
+    path: "/var/log/ilminate-agent/alerts.json"
+    
+  elasticsearch:
+    enabled: false
+    hosts: []
+    index: "ilminate-alerts"
+    
+  splunk:
+    enabled: false
+    host: ""
+    port: 8088
+    token: ""
+
+# Security Settings
+security:
+  tamper_protection: true             # Protect agent files
+  process_protection: true            # Protect agent process
+  config_encryption: true             # Encrypt sensitive config values
+  communication_encryption: true      # Encrypt SIEM communication
+  certificate_validation: true        # Validate TLS certificates
+  
+# Operating System Specific Settings
+os_specific:
+  linux:
+    use_auditd: true                  # Integrate with auditd
+    use_systemd: true                 # Use systemd for service management
+    use_syslog: true                  # Use system syslog
+    
+  windows:
+    use_etw: true                     # Use Event Tracing for Windows
+    use_wmi: true                     # Use WMI for monitoring
+    use_eventlog: true                # Monitor Windows Event Log
+    
+  macos:
+    use_endpoint_security: true       # Use Endpoint Security Framework
+    use_unified_logs: true            # Monitor unified logs
+    use_launchd: true                 # Use launchd for service management
+
+# Advanced Configuration
+advanced:
+  debug_mode: false                   # Enable debug mode
+  profiling: false                    # Enable performance profiling
+  memory_profiling: false             # Enable memory profiling
+  crash_reporting: true               # Enable crash reporting
+  metrics_collection: true            # Collect performance metrics
+  
+# Feature Flags
+features:
+  machine_learning: false             # ML-based detection (future)
+  cloud_integration: false            # Cloud API integration (future)
+  threat_intelligence: false          # Threat intel lookups (future)
+  sandbox_integration: false          # Sandbox analysis (future)
+
+
+

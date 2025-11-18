@@ -1,0 +1,164 @@
+# APEX 90% Efficacy Configuration
+# Optimized settings to maintain 90% detection efficacy
+
+detection_layers:
+  spamassassin:
+    enabled: true
+    weight: 0.25
+    sensitivity: "ultra_high"
+    patterns:
+      - urgency_language
+      - excessive_punctuation
+      - all_caps_subjects
+      - commercial_keywords
+  
+  clamav:
+    enabled: true
+    weight: 0.30
+    sensitivity: "high"
+    scan_attachments: true
+    scan_urls: true
+    suspicious_extensions:
+      - .exe
+      - .bat
+      - .cmd
+      - .scr
+      - .ps1
+      - .sh
+      - .zip
+      - .rar
+      - .7z
+      - .iso
+      - .dmg
+  
+  yara:
+    enabled: true
+    weight: 0.25
+    rules_path: "/Users/cfisher/Library/Mobile Documents/com~apple~CloudDocs/ilminate-agent/deployment/ansible/files/yara"
+    patterns:
+      phishing:
+        urgency: 20
+        action: 18
+        financial: 25
+        suspicious_domains: 30
+        attachments: 25
+      bec:
+        authority: 25
+        financial: 30
+        action: 20
+      spam:
+        commercial: 15
+        suspicious: 20
+  
+  feature_ml:
+    enabled: true
+    weight: 0.15
+    models_path: "/etc/ilminate-apex/models"
+    features:
+      urgency_score: 8
+      financial_terms: 6
+      action_requests: 7
+      suspicious_domains: 15
+      url_count: 4
+  
+  deep_learning:
+    enabled: true
+    weight: 0.05
+    models:
+      - bert_phishing
+      - roberta_threat
+      - ai_generated_detection
+    thresholds:
+      phishing: 0.7
+      bec: 0.8
+      ai_generated: 0.6
+
+# Ultra-aggressive thresholds for 90% efficacy
+thresholds:
+  allow: 0.01      # Only 1% allowed (very strict)
+  quarantine: 0.10 # 10% quarantined
+  block: 0.20      # 20% blocked
+  # Total: 31% action rate, 69% allowed (but with high threat detection)
+
+# Continuous monitoring settings
+monitoring:
+  health_check_interval: 30  # seconds
+  efficacy_check_interval: 60  # seconds
+  restart_threshold: 2  # restart after 2 failures
+  efficacy_target: 0.90  # 90% efficacy target
+  
+  alerts:
+    efficacy_below_target: true
+    service_failure: true
+    high_memory_usage: true
+    detection_drift: true
+
+# Service persistence
+persistence:
+  auto_start: true
+  auto_restart: true
+  graceful_shutdown: true
+  log_rotation: true
+  max_log_size: "100MB"
+  max_log_files: 10
+
+# Performance optimization
+performance:
+  max_concurrent_scans: 10
+  scan_timeout: 30  # seconds
+  memory_limit: "1GB"
+  cpu_limit: 80  # percent
+  
+  caching:
+    enabled: true
+    cache_size: "500MB"
+    ttl: 3600  # seconds
+
+# Threat-specific configurations
+threat_configs:
+  phishing:
+    min_score: 15
+    patterns:
+      - urgency_language
+      - suspicious_urls
+      - credential_requests
+      - account_suspension
+  
+  bec:
+    min_score: 20
+    patterns:
+      - authority_impersonation
+      - financial_requests
+      - wire_transfers
+      - confidential_requests
+  
+  malware:
+    min_score: 25
+    patterns:
+      - suspicious_attachments
+      - embedded_scripts
+      - malicious_urls
+      - executable_files
+  
+  spam:
+    min_score: 10
+    patterns:
+      - commercial_keywords
+      - excessive_punctuation
+      - all_caps_subjects
+      - promotional_content
+
+# Quality assurance
+quality_assurance:
+  false_positive_rate: 0.05  # 5% max false positives
+  false_negative_rate: 0.10  # 10% max false negatives
+  detection_accuracy: 0.90   # 90% accuracy target
+  
+  validation:
+    enabled: true
+    sample_size: 100
+    validation_interval: 3600  # seconds
+    auto_adjust_thresholds: true
+
+
+

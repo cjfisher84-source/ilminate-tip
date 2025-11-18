@@ -1,0 +1,478 @@
+# Ilminate APEX Detection Engine Configuration
+# Advanced Protection & EXamination Platform v2.0
+
+apex_engine:
+  version: "2.0.0"
+  name: "Ilminate APEX Detection Engine"
+  enabled: true
+  
+  # Pre-filtering (Layer 0)
+  pre_filtering:
+    enabled: true
+    whitelist_file: "/etc/ilminate-apex/whitelist.txt"
+    blacklist_file: "/etc/ilminate-apex/blacklist.txt"
+    auth_checks:
+      spf: true
+      dkim: true
+      dmarc: true
+  
+  # Detection Layers Configuration
+  detection_layers:
+    # Layer 1: Traditional Scanning
+    spamassassin:
+      enabled: true
+      path: "/usr/bin/spamc"
+      threshold: 5.0
+      timeout: 10  # seconds
+      
+    clamav:
+      enabled: true
+      path: "/usr/bin/clamdscan"
+      database_update: "daily"
+      timeout: 30  # seconds
+      scan_attachments: true
+      scan_embedded: true
+      
+    sublime:
+      enabled: true
+      rules_path: "/etc/ilminate-apex/sublime-rules"
+      update_interval: "6h"
+      custom_rules_enabled: true
+    
+    # Layer 2: YARA Pattern Detection
+    yara:
+      enabled: true
+      rules_path: "/etc/ilminate-agent/deployment/ansible/files/yara"
+      rules:
+        - malware_basic.yar
+        - ai_email_threats.yar
+      auto_update: true
+      update_interval: "24h"
+      
+    # Layer 3: Feature-Based ML
+    feature_ml:
+      enabled: true
+      model_path: "/etc/ilminate-apex/models/gbdt_model.joblib"
+      confidence_threshold: 0.75
+      active_learning:
+        enabled: true
+        sample_batch_size: 100
+        uncertainty_threshold: 0.6
+      features:
+        auth_features: true
+        infrastructure_features: true
+        content_features: true
+        behavioral_features: true
+        template_features: true
+      
+  # Layer 4: Deep Learning AI
+  deep_learning:
+    enabled: true
+    models:
+      bert_phishing:
+        enabled: true
+        weight: 0.30
+      roberta_threat:
+        enabled: true
+        weight: 0.25
+      ai_forensics:
+        enabled: true
+        weight: 0.15
+      llm_analyzer:
+        enabled: false  # Resource intensive
+        weight: 0.15
+      behavioral_detector:
+        enabled: true
+        weight: 0.10
+      vision_analysis:
+        enabled: true
+        weight: 0.05
+  
+  # Layer 4.5: Image & QR Code Scanning (NEW)
+  image_scanning:
+    enabled: true
+    
+    # QR Code Detection (Quishing)
+    qr_code:
+      enabled: true
+      primary_method: "pyzbar"  # Fast traditional detection
+      fallback_method: "qreader"  # AI-based (YOLOv8) for difficult cases
+      use_ai_detection: true
+      max_qr_codes_per_image: 10
+      analyze_urls: true
+      
+      # Malicious URL patterns
+      malicious_patterns:
+        - '\.tk$'
+        - '\.ml$'
+        - '\.ga$'
+        - '\.cf$'
+        - 'bit\.ly'
+        - 'tinyurl\.com'
+        - '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'  # IP addresses
+      
+      threat_score_threshold: 0.5
+    
+    # Logo Detection (Brand Impersonation)
+    logo_detection:
+      enabled: true
+      engine: "clip"  # OpenAI CLIP model
+      model: "openai/clip-vit-base-patch32"
+      confidence_threshold: 0.7
+      
+      # Brands to monitor
+      monitored_brands:
+        - microsoft
+        - google
+        - apple
+        - paypal
+        - amazon
+        - facebook
+        - linkedin
+        - twitter
+        - netflix
+        - adobe
+      
+      check_impersonation: true
+      impersonation_threshold: 0.8
+    
+    # OCR Text Extraction
+    ocr:
+      enabled: true
+      engine: "tesseract"
+      languages: ['eng']
+      extract_urls: true
+      min_text_length: 10
+      
+      # Suspicious keywords to flag
+      suspicious_keywords:
+        - verify
+        - suspended
+        - urgent
+        - password
+        - login
+        - confirm
+        - account
+        - click here
+        - sign in
+    
+    # Screenshot Detection
+    screenshot_detection:
+      enabled: true
+      check_aspect_ratios: true
+      detect_ui_elements: true
+      ui_keywords:
+        - submit
+        - login
+        - sign in
+        - cancel
+        - continue
+    
+    # Image Preprocessing
+    preprocessing:
+      enabled: true
+      engine: "opencv"
+      enhance_quality: true
+      denoise: true
+      auto_threshold: true
+    
+    # Performance
+    performance:
+      max_image_size: "10MB"
+      skip_oversized_images: true
+      timeout_per_image: 5  # seconds
+      parallel_processing: true
+      cache_results: true
+      cache_ttl: "24h"
+  
+  # Ensemble & Decision Fusion
+  ensemble:
+    strategy: "weighted_fusion"  # weighted_fusion, majority, unanimous
+    
+    # Layer weights in final decision
+    weights:
+      traditional_scanning: 0.15
+      yara_detection: 0.10
+      feature_ml: 0.25
+      deep_learning: 0.50
+    
+    # Short-circuit rules (immediate decisions)
+    short_circuit:
+      - condition: "clamav.virus_found"
+        action: "block"
+        confidence: 1.0
+      - condition: "spamassassin.score > 10"
+        action: "quarantine"
+        confidence: 0.95
+      - condition: "sublime.severity == critical"
+        action: "quarantine"
+        confidence: 0.90
+  
+  # Action Thresholds
+  thresholds:
+    # Risk score 0-100
+    allow: 0
+    tag: 30
+    warn: 50
+    quarantine: 70
+    block: 90
+    
+    # Confidence requirements
+    min_confidence:
+      block: 0.85
+      quarantine: 0.75
+      warn: 0.60
+  
+  # Performance Optimization
+  performance:
+    # Layer timeouts (milliseconds)
+    layer_timeout:
+      layer_0_prefilter: 5
+      layer_1_traditional: 100
+      layer_2_yara: 150
+      layer_3_feature_ml: 200
+      layer_4_deep_learning: 2000
+    
+    # Processing settings
+    parallel_processing: true
+    max_concurrent_scans: 10
+    queue_size: 1000
+    
+    # Caching
+    cache:
+      enabled: true
+      url_reputation_ttl: "24h"
+      domain_reputation_ttl: "24h"
+      model_predictions_ttl: "1h"
+      max_cache_size: "1GB"
+    
+    # Resource limits
+    resources:
+      max_memory: "4GB"
+      max_cpu_cores: 4
+      gpu_acceleration: false
+  
+  # Logging & Monitoring
+  logging:
+    level: "info"  # debug, info, warn, error
+    file: "/var/log/ilminate-apex/apex-engine.log"
+    max_size: "100MB"
+    max_backups: 10
+    format: "json"
+    
+    # What to log
+    log_all_detections: true
+    log_performance_metrics: true
+    log_model_decisions: true
+    log_errors: true
+  
+  # Metrics & Monitoring
+  metrics:
+    enabled: true
+    prometheus:
+      enabled: true
+      port: 9100
+      path: "/metrics"
+    
+    # Track these metrics
+    track:
+      - detection_rate
+      - false_positive_rate
+      - layer_latency
+      - model_accuracy
+      - cache_hit_rate
+      - queue_depth
+  
+  # Alerting
+  alerting:
+    enabled: true
+    
+    # SIEM Integration
+    siem:
+      enabled: true
+      format: "apex_unified"
+      outputs:
+        - type: "syslog"
+          host: "siem.ilminate.local"
+          port: 514
+          protocol: "tcp"
+        - type: "file"
+          path: "/var/log/ilminate-apex/alerts.json"
+    
+    # Alert enrichment
+    enrichment:
+      add_layer_details: true
+      add_feature_explanations: true
+      add_model_confidence: true
+      add_mitre_attack_mapping: true
+      add_threat_intelligence: true
+  
+  # Learning & Improvement
+  learning:
+    # Continuous learning
+    continuous_learning:
+      enabled: true
+      training_schedule: "daily"
+      training_time: "02:00"  # UTC
+      min_samples: 1000
+      
+    # Feedback loop
+    feedback:
+      enabled: true
+      learn_from_user_reports: true
+      learn_from_false_positives: true
+      learn_from_missed_detections: true
+      
+    # Model updates
+    model_updates:
+      auto_update: true
+      update_source: "https://models.ilminate.com/apex"
+      update_interval: "24h"
+      validate_before_deploy: true
+      rollback_on_degradation: true
+      degradation_threshold: 0.05  # 5% performance drop
+  
+  # Mosint OSINT Integration
+  mosint:
+    enabled: true
+    config_path: "~/.mosint.yaml"  # Optional, defaults to ~/.mosint.yaml
+    
+    # Integration settings
+    integration:
+      # BEC Detection
+      bec_detection:
+        enabled: true
+        weight: 0.3  # Weight in BEC scoring
+        
+      # ATO Detection
+      ato_detection:
+        enabled: true
+        weight: 0.4  # Weight in ATO scoring
+        
+      # Pre-filtering
+      email_verification:
+        enabled: true
+        
+      # Threat Intelligence
+      reputation:
+        enabled: true
+        weight: 0.2  # Weight in overall scoring
+  
+  # Threat Intelligence Integration
+  threat_intelligence:
+    enabled: true
+    
+    feeds:
+      # MISP
+      misp:
+        enabled: false
+        url: "https://misp.ilminate.local"
+        api_key: "${MISP_API_KEY}"
+        update_interval: "15m"
+      
+      # Abuse.ch
+      abuse_ch:
+        enabled: true
+        feeds:
+          - "urlhaus"
+          - "threatfox"
+        update_interval: "1h"
+      
+      # PhishTank
+      phishtank:
+        enabled: true
+        api_key: "${PHISHTANK_API_KEY}"
+        update_interval: "1h"
+  
+  # Privacy & Compliance
+  compliance:
+    # Data handling
+    data_privacy:
+      anonymize_pii: true
+      encrypt_at_rest: true
+      encrypt_in_transit: true
+      data_retention: "90d"
+      
+    # Regulatory compliance
+    regulations:
+      gdpr: true
+      hipaa: false
+      sox: false
+      pci_dss: false
+      
+    # Audit logging
+    audit:
+      enabled: true
+      log_all_decisions: true
+      log_user_actions: true
+      log_config_changes: true
+      retention: "365d"
+  
+  # API Configuration
+  api:
+    enabled: true
+    port: 8443
+    ssl: true
+    cert_file: "/etc/ilminate-apex/certs/server.crt"
+    key_file: "/etc/ilminate-apex/certs/server.key"
+    
+    authentication:
+      type: "jwt"  # jwt, api_key, oauth2
+      token_expiry: "24h"
+      
+    rate_limiting:
+      enabled: true
+      requests_per_minute: 1000
+      burst: 100
+    
+    endpoints:
+      - path: "/api/v1/scan"
+        method: "POST"
+        description: "Scan email"
+      - path: "/api/v1/status"
+        method: "GET"
+        description: "Get engine status"
+      - path: "/api/v1/stats"
+        method: "GET"
+        description: "Get statistics"
+      - path: "/api/v1/models"
+        method: "GET"
+        description: "Get model information"
+  
+  # Development & Testing
+  development:
+    debug_mode: false
+    test_mode: false
+    mock_external_services: false
+    save_test_cases: true
+    test_cases_path: "/var/ilminate-apex/test-cases"
+
+# Environment-specific overrides
+# Uncomment and customize for different environments
+
+# Development Environment
+# development:
+#   logging:
+#     level: "debug"
+#   performance:
+#     layer_timeout:
+#       layer_4_deep_learning: 5000  # More time for debugging
+#   development:
+#     debug_mode: true
+
+# Production Environment
+# production:
+#   logging:
+#     level: "warn"
+#   performance:
+#     max_concurrent_scans: 20
+#     resources:
+#       max_memory: "8GB"
+#       max_cpu_cores: 8
+#   learning:
+#     model_updates:
+#       auto_update: false  # Manual updates in prod
+
+
+
+

@@ -1,0 +1,79 @@
+# APEX Detection Engine Configuration
+# Simple configuration for testing
+
+# Detection layers
+detection_layers:
+  pre_filtering:
+    enabled: true
+    max_size_mb: 25
+    allowed_types: ["text/plain", "text/html", "application/pdf", "image/jpeg", "image/png"]
+  
+  traditional_scanning:
+    enabled: true
+    spamassassin:
+      enabled: false  # Not installed
+      weight: 0.3
+    clamav:
+      enabled: false  # Not installed
+      weight: 0.4
+    sublime:
+      enabled: false  # Not installed
+      weight: 0.3
+  
+  yara_rules:
+    enabled: true
+    weight: 0.6
+    rules_path: "../deployment/ansible/files/yara/"
+  
+  feature_ml:
+    enabled: true
+    weight: 0.7
+    model_path: "models/feature_ml_model.joblib"
+  
+  deep_learning:
+    enabled: true
+    weight: 0.8
+    models:
+      phishing: "models/phishing_model"
+      bec: "models/bec_model"
+  
+  image_scanning:
+    enabled: true
+    weight: 0.5
+    qr_detection: true
+    logo_detection: true
+    ocr_extraction: true
+
+# Ensemble strategy
+ensemble:
+  method: "weighted_average"
+  thresholds:
+    allow: 0.3
+    quarantine: 0.6
+    block: 0.8
+
+# Exchange integration
+exchange:
+  enabled: true
+  server: "outlook.office365.com"
+  mailbox: "spam@ilminate.com"
+  monitoring:
+    enabled: true
+    check_interval: 30  # seconds
+    quarantine_folder: "Quarantine"
+  
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/apex.log"
+  max_size: "10MB"
+  backup_count: 5
+
+# Performance
+performance:
+  max_concurrent: 10
+  timeout: 30
+  cache_size: 1000
+
+
+

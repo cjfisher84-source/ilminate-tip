@@ -1,0 +1,116 @@
+# APEX Detection Engine Configuration - Simplified
+# Basic configuration that works without external tools
+
+# Detection layers
+detection_layers:
+  pre_filtering:
+    enabled: true
+    max_size_mb: 25
+    allowed_types: ["text/plain", "text/html", "application/pdf", "image/jpeg", "image/png"]
+  
+  traditional_scanning:
+    enabled: false  # Disabled - tools not installed
+    spamassassin:
+      enabled: false
+      weight: 0.0
+    clamav:
+      enabled: false
+      weight: 0.0
+    sublime:
+      enabled: false
+      weight: 0.0
+  
+  yara_rules:
+    enabled: true
+    weight: 0.8
+    rules_path: "../deployment/ansible/files/yara/"
+  
+  feature_ml:
+    enabled: true
+    weight: 0.9
+    model_path: "models/feature_ml_model.joblib"
+  
+  deep_learning:
+    enabled: true
+    weight: 0.9
+    models:
+      phishing: "models/phishing_model"
+      bec: "models/bec_model"
+  
+  image_scanning:
+    enabled: true
+    weight: 0.7
+    qr_detection: true
+    logo_detection: true
+    ocr_extraction: true
+
+# Basic detection rules (fallback when ML models not available)
+basic_rules:
+  enabled: true
+  phishing_keywords:
+    - "urgent"
+    - "verify"
+    - "account"
+    - "click here"
+    - "immediately"
+    - "wire transfer"
+    - "verify your"
+    - "suspended"
+    - "expired"
+    - "security alert"
+  
+  suspicious_domains:
+    - "fake-bank.com"
+    - "malicious-site.com"
+    - "suspicious-site.com"
+    - "fedex-fake.com"
+  
+  malware_extensions:
+    - ".exe"
+    - ".bat"
+    - ".cmd"
+    - ".scr"
+    - ".pif"
+    - ".com"
+  
+  bec_keywords:
+    - "wire transfer"
+    - "urgent payment"
+    - "immediately"
+    - "ceo"
+    - "executive"
+    - "confidential"
+
+# Ensemble strategy
+ensemble:
+  method: "weighted_average"
+  thresholds:
+    allow: 0.2      # Lower threshold for testing
+    quarantine: 0.4  # Lower threshold for testing
+    block: 0.6      # Lower threshold for testing
+
+# Exchange integration
+exchange:
+  enabled: true
+  server: "outlook.office365.com"
+  mailbox: "spam@ilminate.com"
+  monitoring:
+    enabled: true
+    check_interval: 30  # seconds
+    quarantine_folder: "Quarantine"
+  
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/apex.log"
+  max_size: "10MB"
+  backup_count: 5
+
+# Performance
+performance:
+  max_concurrent: 10
+  timeout: 30
+  cache_size: 1000
+
+
+

@@ -1,0 +1,119 @@
+# APEX Detection Engine Configuration - Full
+# Configuration with all detection layers enabled
+
+# Detection layers
+detection_layers:
+  pre_filtering:
+    enabled: true
+    max_size_mb: 25
+    allowed_types: ["text/plain", "text/html", "application/pdf", "image/jpeg", "image/png"]
+  
+  traditional_scanning:
+    enabled: true
+    spamassassin:
+      enabled: true
+      weight: 0.3
+      config_path: "/opt/homebrew/etc/spamassassin/local.cf"
+    clamav:
+      enabled: true
+      weight: 0.4
+      socket_path: "/opt/homebrew/var/run/clamav/clamd.sock"
+    sublime:
+      enabled: true
+      weight: 0.3
+      api_url: "https://api.sublimesecurity.com"
+  
+  yara_rules:
+    enabled: true
+    weight: 0.6
+    rules_path: "../deployment/ansible/files/yara/"
+  
+  feature_ml:
+    enabled: true
+    weight: 0.7
+    model_path: "models/feature_ml_model.joblib"
+  
+  deep_learning:
+    enabled: true
+    weight: 0.8
+    models:
+      phishing: "models/phishing_model"
+      bec: "models/bec_model"
+  
+  image_scanning:
+    enabled: true
+    weight: 0.5
+    qr_detection: true
+    logo_detection: true
+    ocr_extraction: true
+
+# Ensemble strategy
+ensemble:
+  method: "weighted_average"
+  thresholds:
+    allow: 0.2
+    quarantine: 0.4
+    block: 0.6
+
+# Exchange integration
+exchange:
+  enabled: true
+  server: "outlook.office365.com"
+  mailbox: "spam@ilminate.com"
+  monitoring:
+    enabled: true
+    check_interval: 30
+    quarantine_folder: "Quarantine"
+  
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/apex.log"
+  max_size: "10MB"
+  backup_count: 5
+
+# Performance
+performance:
+  max_concurrent: 10
+  timeout: 30
+  cache_size: 1000
+
+# Basic rules (fallback)
+basic_rules:
+  enabled: true
+  phishing_keywords:
+    - "urgent"
+    - "verify"
+    - "account"
+    - "click here"
+    - "immediately"
+    - "wire transfer"
+    - "verify your"
+    - "suspended"
+    - "expired"
+    - "security alert"
+  
+  suspicious_domains:
+    - "fake-bank.com"
+    - "malicious-site.com"
+    - "suspicious-site.com"
+    - "fedex-fake.com"
+  
+  malware_extensions:
+    - ".exe"
+    - ".bat"
+    - ".cmd"
+    - ".scr"
+    - ".pif"
+    - ".com"
+  
+  bec_keywords:
+    - "wire transfer"
+    - "urgent payment"
+    - "immediately"
+    - "ceo"
+    - "executive"
+    - "confidential"
+
+
+

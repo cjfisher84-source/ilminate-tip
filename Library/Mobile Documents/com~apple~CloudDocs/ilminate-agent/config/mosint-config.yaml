@@ -1,0 +1,31 @@
+# Mosint Configuration File
+# Copy this to ~/.mosint.yaml and add your API keys
+
+# Hunter.io API Key (for related emails)
+# Get from: https://hunter.io/api
+hunter_api_key: ""
+
+# EmailRep.io API Key (for breach checking)
+# Get from: https://emailrep.io/
+emailrep_api_key: ""
+
+# Pastebin Dumps API Key (psbdmp.ws)
+# Get from: https://psbdmp.ws/
+psbdmp_api_key: ""
+
+# Intelligence X API Key (for password leaks)
+# Get from: https://intelx.io/
+intelx_api_key: ""
+
+# BreachDirectory API Key (for password leaks)
+# Get from: https://breachdirectory.org/
+breachdirectory_api_key: ""
+
+# HaveIBeenPwned API Key (optional, has free tier)
+# Get from: https://haveibeenpwned.com/API/Key
+haveibeenpwned_api_key: ""
+
+# Note: Some services work without API keys but with rate limits
+# ipapi.co - Public (no API key needed)
+# Google Search - Public (no API key needed)
+
