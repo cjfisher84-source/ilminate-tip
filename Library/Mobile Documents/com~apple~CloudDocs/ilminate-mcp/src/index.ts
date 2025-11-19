@@ -28,6 +28,9 @@ import { getThreatFeedStatus } from './tools/get-threat-feed-status.js';
 import { querySecurityAssistantTool } from './tools/query-security-assistant.js';
 import { getPortalThreatsTool } from './tools/get-portal-threats.js';
 import { enrichSIEMEventTool } from './tools/enrich-siem-event.js';
+import { explainDetectionResult } from './tools/explain-detection-result.js';
+import { investigateSuspiciousIndicator } from './tools/investigate-suspicious-indicator.js';
+import { getDetectionBreakdown } from './tools/get-detection-breakdown.js';
 import { authenticateRequest } from './auth.js';
 import { logger } from './utils/logger.js';
 
@@ -316,6 +319,90 @@ async function main() {
           required: ['event'],
         },
       },
+      {
+        name: 'explain_detection_result',
+        description: 'Explains why an email was flagged as malicious or suspicious. Provides detailed breakdown of indicators, detection layers, and reasoning. Use this when you need to understand WHY something was detected.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subject: {
+              type: 'string',
+              description: 'Email subject line',
+            },
+            sender: {
+              type: 'string',
+              description: 'Email sender address',
+            },
+            body: {
+              type: 'string',
+              description: 'Email body content',
+            },
+            message_id: {
+              type: 'string',
+              description: 'Optional message ID if available',
+            },
+            verdict_data: {
+              type: 'object',
+              description: 'Optional verdict data from previous analysis',
+            },
+          },
+          required: ['subject', 'sender', 'body'],
+        },
+      },
+      {
+        name: 'investigate_suspicious_indicator',
+        description: 'Performs lightweight, fast checks on specific suspicious indicators when there is doubt. Designed to be non-resource-intensive and quick. Use this to investigate specific indicators like domains, URLs, or content patterns.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            indicator_type: {
+              type: 'string',
+              enum: ['sender', 'domain', 'url', 'attachment', 'content_pattern', 'other'],
+              description: 'Type of indicator to investigate',
+            },
+            indicator_value: {
+              type: 'string',
+              description: 'The actual indicator value to investigate (e.g., domain name, URL, attachment filename)',
+            },
+            context: {
+              type: 'object',
+              description: 'Optional context about the email (subject, sender, risk_score)',
+            },
+          },
+          required: ['indicator_type', 'indicator_value'],
+        },
+      },
+      {
+        name: 'get_detection_breakdown',
+        description: 'Provides detailed breakdown of which detection layers triggered and why. Shows the detection pipeline results for transparency. Use this to understand the complete detection process.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subject: {
+              type: 'string',
+              description: 'Email subject line',
+            },
+            sender: {
+              type: 'string',
+              description: 'Email sender address',
+            },
+            body: {
+              type: 'string',
+              description: 'Email body content',
+            },
+            message_id: {
+              type: 'string',
+              description: 'Optional message ID',
+            },
+            attachments: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'List of attachment filenames',
+            },
+          },
+          required: ['subject', 'sender', 'body'],
+        },
+      },
     ];
 
     return { tools };
@@ -326,7 +413,7 @@ async function main() {
     const { name, arguments: args } = request.params;
 
     // Authenticate request (if API key is required)
-    if (process.env.API_KEY_REQUIRED === 'true') {
+    if (process.env.MCP_REQUIRE_AUTH === 'true') {
       const authResult = await authenticateRequest(request);
       if (!authResult.authenticated) {
         throw new Error(`Authentication failed: ${authResult.error}`);
@@ -385,6 +472,18 @@ async function main() {
 
         case 'enrich_siem_event':
           result = await enrichSIEMEventTool(args as any);
+          break;
+
+        case 'explain_detection_result':
+          result = await explainDetectionResult(args as any);
+          break;
+
+        case 'investigate_suspicious_indicator':
+          result = await investigateSuspiciousIndicator(args as any);
+          break;
+
+        case 'get_detection_breakdown':
+          result = await getDetectionBreakdown(args as any);
           break;
 
         default:

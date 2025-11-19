@@ -14,6 +14,15 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+    load_dotenv(env_path)
+except ImportError:
+    # dotenv not installed, use environment variables only
+    pass
+
 # Add ilminate-agent to path
 ilminate_agent_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -39,8 +48,34 @@ logger = logging.getLogger('apex_bridge')
 app = Flask(__name__)
 CORS(app)
 
+# API Key authentication
+API_KEY = os.environ.get('APEX_BRIDGE_API_KEY', '')
+REQUIRE_AUTH = os.environ.get('APEX_BRIDGE_REQUIRE_AUTH', 'false').lower() == 'true'
+
 # Global APEX engine instance
 apex_engine: Optional[APEXDetectionEngine] = None
+
+
+def require_api_key(f):
+    """Decorator to require API key authentication"""
+    from functools import wraps
+    
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if REQUIRE_AUTH:
+            if not API_KEY:
+                logger.warning("API key required but not configured")
+                return jsonify({'error': 'API key not configured'}), 500
+            
+            # Check for API key in headers
+            provided_key = request.headers.get('X-API-Key') or request.headers.get('Authorization', '').replace('Bearer ', '')
+            
+            if not provided_key or provided_key != API_KEY:
+                logger.warning(f"Unauthorized access attempt from {request.remote_addr}")
+                return jsonify({'error': 'Unauthorized - Invalid API key'}), 401
+        
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def load_config() -> Dict:
@@ -97,6 +132,7 @@ def initialize_apex():
 
 
 @app.route('/health', methods=['GET'])
+@require_api_key
 def health():
     """Health check endpoint"""
     return jsonify({
@@ -107,6 +143,7 @@ def health():
 
 
 @app.route('/api/analyze-email', methods=['POST'])
+@require_api_key
 def analyze_email():
     """Analyze email for threats"""
     if not apex_engine:
@@ -153,6 +190,7 @@ def analyze_email():
 
 
 @app.route('/api/map-mitre', methods=['POST'])
+@require_api_key
 def map_mitre():
     """Map security event to MITRE ATT&CK"""
     if not apex_engine:
@@ -225,6 +263,7 @@ def map_mitre():
 
 
 @app.route('/api/check-domain', methods=['POST'])
+@require_api_key
 def check_domain():
     """Check domain reputation"""
     if not apex_engine:
@@ -284,6 +323,7 @@ def check_domain():
 
 
 @app.route('/api/scan-image', methods=['POST'])
+@require_api_key
 def scan_image():
     """Scan image for threats (QR codes, logo impersonation)"""
     if not apex_engine:
@@ -328,6 +368,7 @@ def scan_image():
 
 
 @app.route('/api/status', methods=['GET'])
+@require_api_key
 def get_status():
     """Get APEX engine status"""
     if not apex_engine:

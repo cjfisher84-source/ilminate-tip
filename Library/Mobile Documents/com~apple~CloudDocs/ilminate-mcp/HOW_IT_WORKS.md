@@ -411,3 +411,4 @@ ssh ec2-user@54.237.174.195 'pm2 logs apex-bridge --lines 50'
 
 **Next:** Deploy ilminate-agent to EC2! 🚀
 
+

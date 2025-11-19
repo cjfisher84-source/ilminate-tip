@@ -32,7 +32,7 @@ export async function analyzeEmailThreat(
 
   try {
     // Call APEX Bridge (connects to ilminate-agent detection engines)
-    const result = await callIlminateAPI('/api/triage/analyze', {
+    const result = await callIlminateAPI('/api/analyze-email', {
       method: 'POST',
       body: JSON.stringify({
         message_id: `mcp-${Date.now()}`,
@@ -43,13 +43,21 @@ export async function analyzeEmailThreat(
       }),
     });
 
-    // Transform APEX response to MCP tool output format
+    if (!result.success || !result.verdict) {
+      throw new Error('Invalid response from APEX Bridge');
+    }
+
+    const verdict = result.verdict;
+
+    // Transform APEX verdict to MCP tool output format
     return {
-      threat_score: result.threat_score || result.risk_score / 100 || 0,
-      threat_type: result.threat_type || 'Safe',
-      indicators: result.indicators || [],
-      recommendation: result.recommendation || 'review',
-      confidence: result.confidence || 0.5,
+      threat_score: (verdict.risk_score || 0) / 100,
+      threat_type: (verdict.threat_categories?.[0] || 'Safe') as 'BEC' | 'Phishing' | 'Malware' | 'Safe',
+      indicators: verdict.indicators || [],
+      recommendation: (verdict.action === 'quarantine' ? 'quarantine' : 
+                       verdict.action === 'block' ? 'quarantine' : 
+                       verdict.threat_level === 'HIGH' || verdict.threat_level === 'CRITICAL' ? 'review' : 'allow') as 'quarantine' | 'review' | 'allow',
+      confidence: verdict.confidence || 0.5,
     };
   } catch (error) {
     logger.error('Failed to analyze email threat', { error, input });

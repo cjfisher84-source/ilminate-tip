@@ -78,6 +78,12 @@ async function callAPEXBridge(
     ...headers,
   };
 
+  // Add API key if configured
+  const bridgeApiKey = process.env.APEX_BRIDGE_API_KEY;
+  if (bridgeApiKey) {
+    requestHeaders['X-API-Key'] = bridgeApiKey;
+  }
+
   try {
     logger.debug(`Calling APEX Bridge: ${method} ${url.toString()}`);
 
@@ -217,7 +223,13 @@ function mapActionToRecommendation(action: string): string {
 export async function checkIlminateAPIHealth(): Promise<boolean> {
   // Try APEX Bridge first
   try {
-    const response = await fetch(`${APEX_BRIDGE_URL}/health`);
+    const headers: Record<string, string> = {};
+    const bridgeApiKey = process.env.APEX_BRIDGE_API_KEY;
+    if (bridgeApiKey) {
+      headers['X-API-Key'] = bridgeApiKey;
+    }
+    
+    const response = await fetch(`${APEX_BRIDGE_URL}/health`, { headers });
     if (response.ok) {
       const data: any = await response.json();
       return data.apex_initialized === true;

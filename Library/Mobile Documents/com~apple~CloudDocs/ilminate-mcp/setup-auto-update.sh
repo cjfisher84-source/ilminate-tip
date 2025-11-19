@@ -76,3 +76,4 @@ echo "To update manually:"
 echo "  ssh $REMOTE_USER@$INSTANCE_IP '/home/$REMOTE_USER/update-ilminate-agent.sh'"
 echo ""
 
+
